@@ -39,21 +39,22 @@ class CashCalculator(Calculator):
     def __init__(self, limit):
         super().__init__(limit)
 
+    RUB_RATE = float(1)
+    USD_RATE = float(70)
+    EUR_RATE = float(80)
+
     def get_today_cash_remained(self, currency):
         self.currency = currency
-        RUB_RATE = float(1)
-        USD_RATE = float(70)
-        EUR_RATE = float(80)
         remainder = float(self.limit - self.total)
         if remainder > 0:
             if currency == 'rub':
-                value = truncate(remainder / RUB_RATE, 2)
+                value = truncate(remainder / self.RUB_RATE, 2)
                 return f'На сегодня осталось {value} руб'
             elif currency == 'usd':
-                value = truncate(remainder / USD_RATE, 2)
+                value = truncate(remainder / self.USD_RATE, 2)
                 return f'На сегодня осталось {value} USD'
             elif currency == 'eur':
-                value = truncate(remainder / EUR_RATE, 2)
+                value = truncate(remainder / self.EUR_RATE, 2)
                 return f'На сегодня осталось {value} Euro'
 
         if remainder == 0:
@@ -104,6 +105,4 @@ cash_calculator.add_record(Record(amount=300, comment="Серёге за обе�
 # а тут пользователь указал дату, сохраняем её
 cash_calculator.add_record(Record(amount=3000, comment="бар в Танин др", date="08.11.2019"))
                 
-print(cash_calculator.get_today_cash_remained("eur"))
-print(*records)
-print(properdatenow)
+print(cash_calculator.get_today_cash_remained("rub"))
