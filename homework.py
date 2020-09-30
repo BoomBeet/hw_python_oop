@@ -10,18 +10,19 @@ nowstring = f'{now.day}.{now.month}.{now.year}'
 
 
 records = []
+total = 0
+
+for record in records:
+    if record.date == properdatenow:
+        total += record.amount
 
 class Calculator:
-    def __init__(self, limit):
+    def __init__(self, limit, total):
         self.limit = limit
+        self.total = total
 
     def add_record(self, recording):
         records.append(recording)
-
-    total = 0
-    for record in records:
-        if record.date == properdatenow:
-             total += record.amount
 
     def get_today_stats(self):
         return self.total
@@ -37,7 +38,7 @@ class Calculator:
 
 class CashCalculator(Calculator):
     def __init__(self, limit):
-        super().__init__(limit)
+        super().__init__(limit, total)
 
     RUB_RATE = float(1)
     USD_RATE = float(70)
@@ -62,19 +63,19 @@ class CashCalculator(Calculator):
 
         if remainder < 0:
             if currency == 'rub':
-                value = truncate(abs(remainder) / RUB_RATE, 2)
+                value = truncate(abs(remainder) / self.RUB_RATE, 2)
                 return f'Денег нет, держись: твой долг - {value} руб'
             elif currency == 'usd':
-                value = truncate(abs(remainder) / USD_RATE, 2)
+                value = truncate(abs(remainder) / self.USD_RATE, 2)
                 return f'Денег нет, держись: твой долг - {value} USD'
             elif currency == 'eur':
-                value = truncate(abs(remainder) / EUR_RATE, 2)
+                value = truncate(abs(remainder) / self.EUR_RATE, 2)
                 return f'Денег нет, держись: твой долг - {value} Euro'
 
 
 class CaloriesCalculator(Calculator):
     def __init__(self, limit):
-        super().__init__(limit)
+        super().__init__(limit, total)
 
     def get_calories_remained(self):
         remainder = float(self.limit - self.total)
@@ -106,3 +107,5 @@ cash_calculator.add_record(Record(amount=300, comment="Серёге за обе�
 cash_calculator.add_record(Record(amount=3000, comment="бар в Танин др", date="08.11.2019"))
                 
 print(cash_calculator.get_today_cash_remained("rub"))
+print(*records)
+print(total)
