@@ -40,37 +40,37 @@ class Calculator:
 
 
 class CashCalculator(Calculator):
-    def __init__(self, limit):
-        super().__init__(limit)
-        RUB_RATE = float(1)
-        USD_RATE = float(80)
-        EUR_RATE = float(90)
+    USD_RATE = 74.86
+    EURO_RATE = 89.08
+    RUB_RATE = 1
 
     def get_today_cash_remained(self, currency):
-        self.currency = currency
-        remainder = self.today_remainder()
-        if remainder > 0:
-            if currency == 'rub':
-                value = truncate(remainder / self.RUB_RATE, 2)
-                return f'На сегодня осталось {value} руб'
-            elif currency == 'usd':
-                value = truncate(remainder / self.USD_RATE, 2)
-                return f'На сегодня осталось {value} USD'
-            elif currency == 'eur':
-                value = truncate(remainder / self.EUR_RATE, 2)
-                return f'На сегодня осталось {value} Euro'
-        elif remainder == 0:
-            return f'Денег нет, держись'
+        cash_remained = self.limit - self.get_today_stats()
+        result = 'Денег нет, держись'
+
+        currencies = {
+            'eur': ('Euro', self.EURO_RATE),
+            'usd': ('USD', self.USD_RATE),
+            'rub': ('руб', self.RUB_RATE),
+        }
+
+        if currency not in currencies:
+            raise ValueError
+
+        currency_name, currency_rate = currencies[currency]
+
+        if currency_rate == 1:
+            result_cache = abs(cash_remained)
         else:
-            if currency == 'rub':
-                value = truncate(abs(remainder) / self.RUB_RATE, 2)
-                return f'Денег нет, держись: твой долг - {value} руб'
-            elif currency == 'usd':
-                value = truncate(abs(remainder) / self.USD_RATE, 2)
-                return f'Денег нет, держись: твой долг - {value} USD'
-            elif currency == 'eur':
-                value = truncate(abs(remainder) / self.EUR_RATE, 2)
-                return f'Денег нет, держись: твой долг - {value} Euro'
+            result_cache = round(abs(cash_remained) / currency_rate, 2)
+
+        if cash_remained > 0:
+            result = f'На сегодня осталось {result_cache} {currency_name}'
+        elif cash_remained < 0:
+            result += f': твой долг - {result_cache} {currency_name}'
+
+        return result
+
 
 
 class CaloriesCalculator(Calculator):
